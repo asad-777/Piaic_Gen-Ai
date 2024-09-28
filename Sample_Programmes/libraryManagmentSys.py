@@ -48,11 +48,118 @@ def search_books():
     else:
         print("\nNo books found.")
 def borrow_books():
-    pass
+    print("Borrow Books:")
+    
+    # Get user ID
+    userid = input("Please Enter Your User ID: ")
+    try:
+        userid = int(userid)
+    except ValueError:
+        print("Invalid User ID")
+        return
+    
+    # Find the user
+    user_found = None
+    for user in users:
+        if user["id"] == userid:
+            user_found = user
+            break
+
+    if not user_found:
+        print("User Not Found")
+        return
+    
+    print(f"User Found with name: {user_found['name']}")
+    
+    # Get book ID
+    bookid = input("Please enter the ID of the book you want to borrow: ")
+    try:
+        bookid = int(bookid)
+    except ValueError:
+        print("Invalid Book ID")
+        return
+    
+    # Find the book
+    book_found = None
+    for book in books:
+        if book["id"] == bookid:
+            book_found = book
+            break
+
+    if not book_found:
+        print("Book Not Found")
+        return
+
+    # Check if the book is available
+    if book_found["status"] == "Available":
+        book_found["status"] = "Borrowed"  # Change the book status to "Borrowed"
+        user_found["borrowed_books"].append(book_found)  # Add book to user's borrowed_books list
+        print(f"Book '{book_found['title']}' borrowed successfully by {user_found['name']}.")
+    else:
+        print(f"Sorry, '{book_found['title']}' is already borrowed by someone else.")
+
 def return_books():
-    pass
+    print("Return Books:")
+    
+    # Get user ID
+    userid = input("Please Enter Your User ID: ")
+    try:
+        userid = int(userid)
+    except ValueError:
+        print("Invalid User ID")
+        return
+    
+    # Find the user
+    user_found = None
+    for user in users:
+        if user["id"] == userid:
+            user_found = user
+            break
+
+    if not user_found:
+        print("User Not Found")
+        return
+    
+    # Check if the user has any borrowed books
+    if not user_found["borrowed_books"]:
+        print(f"{user_found['name']} has not borrowed any books.")
+        return
+    
+    # Display borrowed books
+    print(f"\n{user_found['name']}'s Borrowed Books:")
+    for idx, book in enumerate(user_found["borrowed_books"], start=1):
+        print(f"{idx}. {book['title']} by {book['author']}")
+    
+    # Select book to return
+    book_to_return_idx = input("Enter the number of the book you want to return: ")
+    try:
+        book_to_return_idx = int(book_to_return_idx) - 1  # Convert to 0-based index
+        if book_to_return_idx < 0 or book_to_return_idx >= len(user_found["borrowed_books"]):
+            print("Invalid selection.")
+            return
+    except ValueError:
+        print("Invalid selection.")
+        return
+    
+    # Get the book from the borrowed_books list
+    book_to_return = user_found["borrowed_books"][book_to_return_idx]
+    
+    # Update the book's status to "Available"
+    for book in books:
+        if book["id"] == book_to_return["id"]:
+            book["status"] = "Available"
+            break
+    
+    # Remove the book from user's borrowed_books list
+    user_found["borrowed_books"].pop(book_to_return_idx)
+    
+    print(f"Book '{book_to_return['title']}' returned successfully by {user_found['name']}.")
+
+
 def view_users():
-    pass
+    print("All Users:")
+    for book in users:
+        print(f'{book["id"]}- "{book["name"]}"')
 
             # main loop starts here
 print("Welcome to the Community Library System!\n----------------------------------------\n")
