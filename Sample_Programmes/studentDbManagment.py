@@ -15,8 +15,7 @@ input_names()
 if names:
     idk:int = 1
     for x in names:
-        temporary:tuple = (idk , x)
-        total.append(temporary)
+        total.append((idk, x))
         idk += 1
     print(f"\nComplete List of Students (Tuples):\n{total}\n\nList of Students with IDs:")
     for a in total:
