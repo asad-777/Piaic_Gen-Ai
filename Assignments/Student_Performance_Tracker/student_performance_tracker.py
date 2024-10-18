@@ -1,11 +1,3 @@
-# Add students.
-# Store their grades for different subjects.
-# Calculate the student’s average score.
-# Check if students are passing or failing based on a threshold.
-# Calculate the class's average score.
-# Display student performance in a structured manner.
-
-
 class student:
     
     total_stu:int = 0
@@ -19,7 +11,7 @@ class student:
         student.total_stu += 1   
     def average(self) -> float:
         return (self.math + self.english + self.science) / 3
-    def status_check(self) -> list:
+    def status_check(self):
         fail = []
         if self.math < 40:
             fail.append("Mathematics")
@@ -27,7 +19,25 @@ class student:
             fail.append("Science")
         if self.english < 40:
             fail.append("English")
-        return fail
+        if fail:
+            return fail
+        else:
+            return None
+
+class PerformanceTracker(student):
+    @staticmethod
+    def total_avg():
+        if student.total_stu == 0:
+                print("No Student Found!")
+        else:
+            total_avg = []
+            for x in student.s:
+                total_avg.append(x.average())
+            for n in total_avg:
+                sum = 0
+                sum += n
+            print(f"The total average score of all students is {sum/len(total_avg):.2f}")
+
 
 def get_name():
     while True:
@@ -89,6 +99,13 @@ def average_specific(name_1):
         else:
             print("No student with that name exists")
 
+def status_specific(name_1):
+    for x in student.s:
+        if x.name == name_1.lower().strip():
+            return x.status_check()
+        else:
+            print("No student with that name exists")
+
 
 
 def main():
@@ -109,19 +126,15 @@ def main():
             x = average_specific(name_for_average)
             print(f"{name_for_average}'s average score is {x:.2f}")
         elif choice == '3':
-            if student.total_stu == 0:
-                print("No Student Found!")
-            else:
-                total_avg = []
-                for x in student.s:
-                    total_avg.append(x.average())
-                for n in total_avg:
-                    sum = 0
-                    sum += n
-                print(f"The total average score of all students is {sum/len(total_avg):.2f}")
+            PerformanceTracker.total_avg()
         elif choice == '4':
-            # Check if specific student passed
-            pass
+            name_for_status = input("\nEnter student's name: ")
+            x = status_specific(name_for_status) 
+
+            if x:
+                print(f"Student is fail in {[i for i in x]}")
+            else:
+                print("Student is pass in all subjects")           
         elif choice == '5':
             # Check if all students passed
             pass
