@@ -55,15 +55,15 @@ def check_marks(mark):
 def get_grade():
     list = []
     while True:
-        g1 = input("Enter Marks for math:")
+        g1 = input("Enter Marks for Math: ")
         g1_c = check_marks(g1)
         if g1_c is not None: break
     while True:
-        g2 = input("Enter Marks for english:")
+        g2 = input("Enter Marks for Science: ")
         g2_c = check_marks(g2)
         if g2_c is not None: break
     while True:
-        g3 = input("Enter Marks for science:")
+        g3 = input("Enter Marks for English: ")
         g3_c = check_marks(g3)
         if g3_c is not None: break
 
@@ -80,10 +80,21 @@ def add_student():
 
     new_obj = student(name,grade[0],grade[1],grade[2])
     student.s.append(new_obj)
+
+
+def average_specific(name_1):
+    for x in student.s:
+        if x.name == name_1.lower().strip():
+            return x.average()
+        else:
+            print("No student with that name exists")
+
+
+
 def main():
 
     while True:
-        print("===============================================\nWelcome to the Student Management System:")
+        print("\n===============================================\nWelcome to the Student Management System:")
         print("1. Add Student")
         print("2. Calculate Average Marks for a Specific Student")
         print("3. Calculate Average Marks for All Students")
@@ -94,11 +105,20 @@ def main():
         if choice == '1':
             add_student() 
         elif choice == '2':
-            # Calculate specific student's average marks
-            pass
+            name_for_average = input("\nEnter student's name for average: ")
+            x = average_specific(name_for_average)
+            print(f"{name_for_average}'s average score is {x:.2f}")
         elif choice == '3':
-            # Calculate average marks for all students
-            pass
+            if student.total_stu == 0:
+                print("No Student Found!")
+            else:
+                total_avg = []
+                for x in student.s:
+                    total_avg.append(x.average())
+                for n in total_avg:
+                    sum = 0
+                    sum += n
+                print(f"The total average score of all students is {sum/len(total_avg):.2f}")
         elif choice == '4':
             # Check if specific student passed
             pass
