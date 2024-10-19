@@ -37,6 +37,14 @@ class PerformanceTracker(student):
                 sum = 0
                 sum += n
             print(f"The total average score of all students is {sum/len(total_avg):.2f}")
+    @staticmethod
+    def total_status_check():
+        fail_students = 0
+        for x in student.s:
+            fail = x.status_check()
+            if fail:
+                fail_students += 1
+        return fail_students
 
 
 def get_name():
@@ -136,8 +144,11 @@ def main():
             else:
                 print("Student is pass in all subjects")           
         elif choice == '5':
-            # Check if all students passed
-            pass
+            x = PerformanceTracker.total_status_check()
+            if x == 0:
+                print("No student was fail, All students are pass")
+            else:
+                print(f"Out of {student.total_stu} students, {x} students were fail!")
         elif choice == '6':
             print("Goodbye!")
             break
