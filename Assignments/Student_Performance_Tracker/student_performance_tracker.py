@@ -33,8 +33,8 @@ class PerformanceTracker(student):
             total_avg = []
             for x in student.s:
                 total_avg.append(x.average())
+            sum = 0
             for n in total_avg:
-                sum = 0
                 sum += n
             print(f"The total average score of all students is {sum/len(total_avg):.2f}")
     @staticmethod
@@ -55,8 +55,7 @@ def get_name():
                 print("Sorry that name already exists")
                 break
         else:
-            return name
-            break     
+            return name     
 
 def check_marks(mark):
     try:
@@ -101,18 +100,23 @@ def add_student():
 
 
 def average_specific(name_1):
-    for x in student.s:
-        if x.name == name_1.lower().strip():
-            return x.average()
+    if student.total_stu > 0:
+        for x in student.s:
+            if x.name == name_1.lower().strip():
+                return x.average()
         else:
             print("No student with that name exists")
+    else:
+        print("No student found, please enter students first!")
+        return None
+    
 
 def status_specific(name_1):
     for x in student.s:
         if x.name == name_1.lower().strip():
             return x.status_check()
-        else:
-            print("No student with that name exists")
+    else:
+        print("No student with that name exists")
 
 
 
@@ -132,7 +136,8 @@ def main():
         elif choice == '2':
             name_for_average = input("\nEnter student's name for average: ")
             x = average_specific(name_for_average)
-            print(f"{name_for_average}'s average score is {x:.2f}")
+            if x is not None:
+                print(f"{name_for_average}'s average score is {x:.2f}")
         elif choice == '3':
             PerformanceTracker.total_avg()
         elif choice == '4':
