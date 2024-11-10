@@ -1,164 +1,167 @@
-class student:
-    
-    total_stu:int = 0
-    s:list = []
-
-    def __init__(self,name,math,science,english):
-        self.name = name.lower().strip()
+import pandas as pd
+import os  
+class Students:
+    def __init__(self, name, math, science, english):
+        self.name = name
         self.math = math
         self.science = science
-        self.english = english
-        student.total_stu += 1   
-    def average(self) -> float:
-        return (self.math + self.english + self.science) / 3
-    def status_check(self):
-        fail = []
-        if self.math < 40:
-            fail.append("Mathematics")
-        if self.science < 40:
-            fail.append("Science")
-        if self.english < 40:
-            fail.append("English")
-        if fail:
-            return fail
+        self.english = english  
+    @classmethod
+    def save_to_csv(cls, name, math, science, english, filename="students.csv"):
+        df = pd.DataFrame({
+            "Names": [name],
+            "Math": [math],
+            "Science": [science],
+            "English": [english],
+        })
+        if os.path.isfile(filename) and os.path.getsize(filename)>0:
+            df.to_csv(filename, mode='a', header=False, index=False)
         else:
-            return None
-
-class PerformanceTracker(student):
-    @staticmethod
-    def total_avg():
-        if student.total_stu == 0:
-                print("No Student Found!")
+            df.to_csv(filename, mode='w', header=True, index=False)
+def check_df():
+    if os.path.isfile("students.csv") and os.path.getsize("students.csv") > 0:
+        df = pd.read_csv("students.csv")
+        return df
+    else:
+        return None   
+def name_unique(x):
+    y = check_df()
+    if y is not None:
+        if x in y["Names"].values:
+            return False
         else:
-            total_avg = []
-            for x in student.s:
-                total_avg.append(x.average())
-            sum = 0
-            for n in total_avg:
-                sum += n
-            print(f"The total average score of all students is {sum/len(total_avg):.2f}")
-    @staticmethod
-    def total_status_check():
-        fail_students = 0
-        for x in student.s:
-            fail = x.status_check()
-            if fail:
-                fail_students += 1
-        return fail_students
-
-
-def get_name():
+            return True
+    else:
+        return True
+def get_info():
+    print()
     while True:
-        name = input("Enter your name: ")
-        for x in student.s:
-            if x.name == name:
-                print("Sorry that name already exists")
+        name = input("Enter Name of Student: ")
+        if name.isalpha():
+            name = name.lower().strip()
+            if name_unique(name):
                 break
+            else:
+                print("Name Already exists, Please enter a Unique Name !")
+                continue
         else:
-            return name     
-
-def check_marks(mark):
-    try:
-        mark = int(mark)
-        if mark >= 0 and mark <= 100:
-            return mark
-        else:   
-            print("Please Enter Marks Between 0 and 100")
-            return None
-    except ValueError:
-        print("Please Enter a valid number")
-        return None
-    
-def get_grade():
-    list = []
-    while True:
-        g1 = input("Enter Marks for Math: ")
-        g1_c = check_marks(g1)
-        if g1_c is not None: break
-    while True:
-        g2 = input("Enter Marks for Science: ")
-        g2_c = check_marks(g2)
-        if g2_c is not None: break
-    while True:
-        g3 = input("Enter Marks for English: ")
-        g3_c = check_marks(g3)
-        if g3_c is not None: break
-
-
-
-    list.append(g1_c)
-    list.append(g2_c)
-    list.append(g3_c)
-    return list
-
-def add_student():
-    name = get_name()
-    grade = get_grade()
-
-    new_obj = student(name,grade[0],grade[1],grade[2])
-    student.s.append(new_obj)
-
-
-def average_specific(name_1):
-    if student.total_stu > 0:
-        for x in student.s:
-            if x.name == name_1.lower().strip():
-                return x.average()
-        else:
-            print("No student with that name exists")
-    else:
-        print("No student found, please enter students first!")
-        return None
-    
-
-def status_specific(name_1):
-    for x in student.s:
-        if x.name == name_1.lower().strip():
-            return x.status_check()
-    else:
-        print("No student with that name exists")
-
-
-
+            print("Please Enter a Valid Name!")
+            continue
+    grades = []
+    def get_grades(subject) -> int:
+        while True:
+            x = input(f"Enter Grades in {subject}: ")
+            try:
+                x = int(x)
+                if 0 <= x <= 100:
+                    return x
+                else:
+                    print("Please Enter a value between 0 and 100!")
+                    continue
+            except ValueError:
+                print("Please Enter a Valid Grade!")
+                continue
+    grades.append(get_grades("Math"))
+    grades.append(get_grades("Science"))
+    grades.append(get_grades("English"))
+    new_student = Students(name, grades[0], grades[1], grades[2])
+    Students.save_to_csv(new_student.name, new_student.math, new_student.science, new_student.english)
 def main():
-
+    print("Welcome to Lms\n==================================================\n")
     while True:
-        print("\n===============================================\nWelcome to the Student Management System:")
-        print("1. Add Student")
-        print("2. Calculate Average Marks for a Specific Student")
-        print("3. Calculate Average Marks for All Students")
-        print("4. Check if a Specific Student is Pass or Fail")
-        print("5. Check if All Students are Pass or Fail")
-        print("6. Quit")
-        choice = input("\nPlease select an option (1-6): ")
-        if choice == '1':
-            add_student() 
-        elif choice == '2':
-            name_for_average = input("\nEnter student's name for average: ")
-            x = average_specific(name_for_average)
-            if x is not None:
-                print(f"{name_for_average}'s average score is {x:.2f}")
-        elif choice == '3':
-            PerformanceTracker.total_avg()
-        elif choice == '4':
-            name_for_status = input("\nEnter student's name: ")
-            x = status_specific(name_for_status) 
-
-            if x:
-                print(f"Student is fail in {[i for i in x]}")
+        print()
+        print("Press 1 to add Student")
+        print("Press 2 to check all available students")
+        print("Press 3 to Check Average for a specific Student")
+        print("Press 4 to Calculate Average Marks for all class")
+        print("Press 5 to Check Pass / Fail status of specific Student")
+        print("Press 6 to check Pass/Fail status of Complete class")
+        print("Press 7 to Quit")
+        x = input("\nEnter Your Choice Here: ")
+        if x == "1":
+            get_info()
+            print("==================================================")
+        elif x == "2":
+            y = check_df()
+            if y is not None:
+                print("\n==================================================")
+                print(y.to_string())
+                print("==================================================")
             else:
-                print("Student is pass in all subjects")           
-        elif choice == '5':
-            x = PerformanceTracker.total_status_check()
-            if x == 0:
-                print("No student was fail, All students are pass")
+                print("No Student found ! ")
+                continue
+        elif x == "3":
+            name_avg = input("Enter students name: ").lower().strip()
+            y = check_df()
+            if y is not None:
+                h = True
+                for index,value in y.iterrows():
+                    if name_avg == value["Names"]:
+                        avg:float =  (value["Math"] + value["Science"] + value["English"]) / 3.0
+                        print(f"The Average Marks of {value["Names"]} is {avg:.2f}")
+                        print("==================================================")
+                    else:
+                        h = None
+                if h is None:
+                    print("No Such name was Found !")
+                    print("==================================================")              
             else:
-                print(f"Out of {student.total_stu} students, {x} students were fail!")
-        elif choice == '6':
-            print("Goodbye!")
+                print("No students found !")
+                print("==================================================")
+        elif x == "4":
+            y = check_df()
+            if y is not None:
+                sum = 0
+                for a,values in y.iterrows():
+                    sum += (values["Math"] + values["Science"] + values["English"])
+                avg = sum /  (len(y)*3.0)
+                print(f"The average score of complete class is {avg:.2f}")
+                print("==================================================")
+            else:
+                print("No Students were found !")
+                print("==================================================")
+        elif x == "5":
+            y = check_df()
+            if y is not None:
+                name_pf = input("Enter Name of Student: ").lower().strip()
+                found = False  
+                for index, value in y.iterrows():
+                    if name_pf == value["Names"]:
+                        found = True
+                        fail_subj = []
+                        if value["English"] < 40:
+                            fail_subj.append("English")
+                        if value["Math"] < 40:
+                            fail_subj.append("Math")
+                        if value["Science"] < 40:
+                            fail_subj.append("Science")
+                        if fail_subj:
+                            print(f"{name_pf} has failed in: {', '.join(fail_subj)}")
+                        else:
+                            print(f"{name_pf} has passed all subjects.")
+                        break  
+                if not found:
+                    print("No Such Student was found!")
+                print("==================================================")
+            else:
+                print("No Students were found!")
+                print("==================================================")
+        elif x == "6":
+            y = check_df()
+            if y is not None:
+                sum = 0
+                for a,values in y.iterrows():
+                    sum += (values["Math"] + values["Science"] + values["English"])
+                avg = sum /  (len(y)*3.0)
+                if avg < 40:
+                    print("The Class failed !")
+                else:
+                    print("Total Class Passed !")
+        elif x == "7":
+            print("Good Bye!")
             break
         else:
-            print("Invalid choice. Please select a valid option (1-6).")
-
+            print("Please Enter a Valid Choice!")
+            print("==================================================")
 if __name__ == "__main__":
     main()
